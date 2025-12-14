@@ -40,7 +40,7 @@ const Controls: React.FC<ControlsProps> = ({
   canPrev
 }) => {
   return (
-    <div className="flex items-center gap-1 p-2 bg-zinc-900/90 backdrop-blur-md rounded-full border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)]">
+    <div className="flex items-center gap-2 p-2 bg-zinc-900/80 backdrop-blur-md rounded-full border border-white/10 shadow-[var(--shadow-soft)]">
       
       {/* Navigation */}
       <div className="flex items-center">
@@ -48,7 +48,7 @@ const Controls: React.FC<ControlsProps> = ({
           onClick={onPrev}
           disabled={!canPrev}
           className={`w-10 h-10 flex items-center justify-center rounded-full transition-all ${
-            !canPrev ? 'text-zinc-700' : 'text-zinc-400 hover:text-white hover:bg-white/10'
+            !canPrev ? 'text-zinc-700' : 'text-zinc-300 hover:text-white hover:bg-white/10'
           }`}
           title="Prev"
         >
@@ -61,7 +61,7 @@ const Controls: React.FC<ControlsProps> = ({
           className={`w-12 h-12 flex items-center justify-center rounded-full mx-1 transition-all shadow-lg ${
             !canNext 
             ? 'bg-zinc-800 text-zinc-600' 
-            : 'bg-white text-black hover:scale-105 hover:shadow-white/20'
+            : 'bg-white text-black hover:scale-105 hover:shadow-white/20 focus:outline-none focus:ring-2 focus:ring-white/50'
           }`}
           title="Next"
         >
@@ -71,7 +71,7 @@ const Controls: React.FC<ControlsProps> = ({
         <button
            onClick={onNext}
            disabled={!canNext}
-           className="w-10 h-10 flex items-center justify-center rounded-full text-zinc-400 hover:text-white hover:bg-white/10 transition-all sm:hidden"
+           className="w-10 h-10 flex items-center justify-center rounded-full text-zinc-300 hover:text-white hover:bg-white/10 transition-all sm:hidden"
         >
           <ChevronRight size={20} />
         </button>
@@ -86,7 +86,7 @@ const Controls: React.FC<ControlsProps> = ({
           className={`px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-all ${
             isClear 
               ? 'bg-red-500 text-white shadow-[0_0_15px_rgba(239,68,68,0.4)]' 
-              : 'text-zinc-400 hover:text-zinc-200 hover:bg-white/5'
+              : 'text-zinc-300 hover:text-zinc-100 hover:bg-white/5'
           }`}
         >
           Clear
@@ -97,7 +97,7 @@ const Controls: React.FC<ControlsProps> = ({
           className={`px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-all ${
             isBlackout 
               ? 'bg-zinc-700 text-white' 
-              : 'text-zinc-400 hover:text-zinc-200 hover:bg-white/5'
+              : 'text-zinc-300 hover:text-zinc-100 hover:bg-white/5'
           }`}
         >
           Blank
@@ -108,7 +108,7 @@ const Controls: React.FC<ControlsProps> = ({
           className={`w-10 h-10 flex items-center justify-center rounded-full transition-all ${
             isOffering 
               ? 'bg-indigo-500 text-white shadow-[0_0_15px_rgba(99,102,241,0.4)]' 
-              : 'text-zinc-400 hover:text-zinc-200 hover:bg-white/5'
+              : 'text-zinc-300 hover:text-zinc-100 hover:bg-white/5'
           }`}
           title="Toggle Offering"
         >

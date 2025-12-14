@@ -375,12 +375,12 @@ function App() {
   const currentContent = state.slides[state.currentSlideIndex]?.content || "";
 
   return (
-    <div className="flex flex-col h-screen text-white overflow-hidden bg-zinc-950 font-sans selection:bg-indigo-500/30 selection:text-indigo-200">
+    <div className="flex flex-col h-screen text-white overflow-hidden bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950 font-sans selection:bg-indigo-500/30 selection:text-indigo-200">
       
       {/* Minimal Header */}
-      <header className="h-14 flex items-center px-6 justify-between select-none z-30 shrink-0 border-b border-white/5 bg-zinc-950/80 backdrop-blur-sm">
+      <header className="h-14 flex items-center px-6 justify-between select-none z-30 shrink-0 border-b border-white/5 bg-zinc-900/70 backdrop-blur-md">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 bg-white text-black rounded-lg flex items-center justify-center font-bold shadow-[0_0_15px_rgba(255,255,255,0.2)]">
+          <div className="w-8 h-8 bg-white text-black rounded-lg flex items-center justify-center font-bold shadow-[var(--shadow-soft)]">
             <Zap size={18} fill="currentColor" className="text-black" />
           </div>
           <div className="flex flex-col">
@@ -392,7 +392,7 @@ function App() {
         <div className="flex items-center gap-3">
           <button
             onClick={openProjectorWindow}
-            className="group flex items-center gap-2 px-4 py-1.5 bg-zinc-900 hover:bg-zinc-800 text-zinc-400 hover:text-white text-xs font-medium rounded-full transition-all border border-white/5"
+            className="group flex items-center gap-2 px-4 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white text-xs font-medium rounded-full transition-all border border-white/10"
           >
             <Monitor size={14} />
             <span>Projector</span>
@@ -423,7 +423,7 @@ function App() {
         </div>
 
         {/* Workspace (Center) */}
-        <div className="flex-1 flex flex-col relative bg-zinc-900/50">
+        <div className="flex-1 flex flex-col relative bg-zinc-900/40">
           
           {/* Preview Area */}
           <div className="flex-1 flex items-center justify-center p-8 lg:p-16 overflow-hidden relative">
@@ -434,7 +434,7 @@ function App() {
               className={`relative bg-black overflow-hidden transition-all duration-300 ease-out ${
                 isFullscreen 
                   ? 'w-full h-full fixed inset-0 z-50' 
-                  : 'aspect-video w-full max-w-5xl shadow-2xl rounded-2xl ring-1 ring-white/5'
+                  : 'aspect-video w-full max-w-5xl shadow-2xl rounded-[var(--radius-lg)] ring-1 ring-white/10'
               }`}
             >
               <SlideDisplay 
@@ -474,8 +474,8 @@ function App() {
         </div>
 
         {/* Slide List (Right) */}
-        <div className="w-64 bg-zinc-950 border-l border-white/5 flex flex-col shrink-0 z-10">
-          <div className="h-12 flex items-center gap-2 px-5 border-b border-white/5 text-[10px] font-bold text-zinc-500 uppercase tracking-widest">
+        <div className="w-64 bg-zinc-950/80 backdrop-blur-md border-l border-white/5 flex flex-col shrink-0 z-10">
+          <div className="h-12 flex items-center gap-2 px-5 border-b border-white/5 text-[10px] font-bold text-zinc-400 uppercase tracking-widest">
             <Layers size={12} /> Timeline
           </div>
           <div className="flex-1 overflow-y-auto p-3 space-y-3 custom-scrollbar">
@@ -488,7 +488,7 @@ function App() {
                   className={`group cursor-pointer rounded-xl overflow-hidden transition-all duration-200 relative ${
                     isActive 
                       ? 'ring-2 ring-indigo-500 shadow-lg shadow-indigo-500/20 opacity-100' 
-                      : 'opacity-60 hover:opacity-100 hover:ring-1 hover:ring-white/20'
+                      : 'opacity-70 hover:opacity-100 hover:ring-1 hover:ring-white/20'
                   }`}
                 >
                   <div className="aspect-video bg-zinc-900 relative">

@@ -127,7 +127,7 @@ const Editor: React.FC<EditorProps> = ({
 		<div className="flex flex-col h-full">
 			{/* Modern Pill Tabs */}
 			<div className="px-4 py-4 shrink-0">
-				<div className="flex p-1 bg-zinc-900 rounded-full border border-white/5">
+				<div className="flex p-1 bg-zinc-900/70 backdrop-blur rounded-full border border-white/10">
 					{[
 						{ id: "lyrics", icon: AlignLeft, label: "Text" },
 						{ id: "bible", icon: Book, label: "Bible" },
@@ -140,7 +140,7 @@ const Editor: React.FC<EditorProps> = ({
 							className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-full text-xs font-semibold transition-all duration-200 ${
 								activeTab === tab.id
 									? "bg-zinc-800 text-white shadow-sm ring-1 ring-white/10"
-									: "text-zinc-500 hover:text-zinc-300"
+									: "text-zinc-400 hover:text-zinc-200"
 							}`}
 						>
 							<tab.icon size={14} />
@@ -170,7 +170,7 @@ const Editor: React.FC<EditorProps> = ({
 						</div>
 
 						<textarea
-							className="flex-1 w-full bg-transparent text-zinc-100 p-6 border-none focus:ring-0 focus:outline-none resize-none font-sans text-sm leading-7 placeholder-zinc-700 selection:bg-white/10"
+							className="flex-1 w-full bg-transparent text-zinc-100 p-6 border-none focus:ring-0 focus:outline-none resize-none font-sans text-sm leading-7 placeholder-zinc-600 selection:bg-white/10"
 							placeholder="Paste lyrics here...&#10;&#10;Use double blank lines to separate slides."
 							value={rawText}
 							onChange={(e) => onTextChange(e.target.value)}
@@ -193,7 +193,7 @@ const Editor: React.FC<EditorProps> = ({
 									onChange={(e) =>
 										setBibleVersion(e.target.value as BibleVersion)
 									}
-									className="bg-zinc-900 border border-white/5 rounded-xl px-3 text-xs text-zinc-400 focus:outline-none focus:text-white transition-colors"
+									className="bg-zinc-900/70 backdrop-blur border border-white/10 rounded-xl px-3 text-xs text-zinc-300 focus:outline-none focus:text-white transition-colors"
 								>
 									<option value="web">WEB</option>
 									<option value="kjv">KJV</option>
@@ -206,7 +206,7 @@ const Editor: React.FC<EditorProps> = ({
 										onChange={(e) => setBibleQuery(e.target.value)}
 										onKeyDown={(e) => e.key === "Enter" && handleBibleSearch()}
 										placeholder="John 3:16"
-										className="w-full bg-zinc-900 border border-white/5 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all placeholder-zinc-700"
+										className="w-full bg-zinc-900/70 backdrop-blur border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all placeholder-zinc-600"
 									/>
 								</div>
 							</div>
@@ -214,7 +214,7 @@ const Editor: React.FC<EditorProps> = ({
 							<button
 								onClick={handleBibleSearch}
 								disabled={isLoadingVerse}
-								className="w-full py-3 bg-zinc-800 hover:bg-white text-zinc-400 hover:text-black rounded-xl flex items-center justify-center transition-all disabled:opacity-50 text-sm font-bold gap-2"
+								className="w-full py-3 bg-zinc-800 hover:bg-white text-zinc-300 hover:text-black rounded-xl flex items-center justify-center transition-all disabled:opacity-50 text-sm font-bold gap-2"
 							>
 								{isLoadingVerse ? (
 									<div className="animate-spin w-4 h-4 border-2 border-zinc-500 border-t-transparent rounded-full" />
@@ -233,7 +233,7 @@ const Editor: React.FC<EditorProps> = ({
 						</div>
 
 						{foundVerse && (
-							<div className="bg-zinc-900 border border-white/5 rounded-2xl p-6 space-y-4 animate-in fade-in slide-in-from-bottom-2">
+							<div className="bg-zinc-900/70 backdrop-blur border border-white/10 rounded-2xl p-6 space-y-4 animate-in fade-in slide-in-from-bottom-2">
 								<div>
 									<h3 className="text-indigo-400 font-display text-lg font-bold">
 										{foundVerse.ref}{" "}
@@ -299,7 +299,7 @@ const Editor: React.FC<EditorProps> = ({
 									))}
 								</div>
 
-								<label className="flex items-center gap-2 w-full justify-center px-4 py-3 bg-zinc-900 hover:bg-zinc-800 text-zinc-400 hover:text-white text-xs font-semibold rounded-xl border border-white/5 cursor-pointer transition-all">
+								<label className="flex items-center gap-2 w-full justify-center px-4 py-3 bg-zinc-900/70 hover:bg-zinc-800 text-zinc-300 hover:text-white text-xs font-semibold rounded-xl border border-white/10 cursor-pointer transition-all backdrop-blur">
 									<Upload size={14} />
 									<span>Upload Custom BG</span>
 									<input
@@ -418,7 +418,7 @@ const Editor: React.FC<EditorProps> = ({
 									type="text"
 									value={offeringConfig.title}
 									onChange={(e) => onOfferingChange({ title: e.target.value })}
-									className="w-full bg-zinc-900 border border-white/5 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-colors placeholder-zinc-700"
+									className="w-full bg-zinc-900/70 backdrop-blur border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-colors placeholder-zinc-600"
 								/>
 							</div>
 
@@ -432,7 +432,7 @@ const Editor: React.FC<EditorProps> = ({
 									onChange={(e) =>
 										onOfferingChange({ subTitle: e.target.value })
 									}
-									className="w-full bg-zinc-900 border border-white/5 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-colors placeholder-zinc-700"
+									className="w-full bg-zinc-900/70 backdrop-blur border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-colors placeholder-zinc-600"
 								/>
 							</div>
 
@@ -443,7 +443,7 @@ const Editor: React.FC<EditorProps> = ({
 
 								{/* File Upload */}
 								<div className="flex items-center gap-2">
-									<label className="flex-1 cursor-pointer bg-zinc-900 hover:bg-zinc-800 text-zinc-300 text-xs py-3 px-3 rounded-xl flex items-center justify-center gap-2 transition-colors border border-white/5">
+									<label className="flex-1 cursor-pointer bg-zinc-900/70 hover:bg-zinc-800 text-zinc-300 text-xs py-3 px-3 rounded-xl flex items-center justify-center gap-2 transition-colors border border-white/10 backdrop-blur">
 										<Upload size={14} />
 										<span>Upload Image</span>
 										<input
@@ -460,7 +460,7 @@ const Editor: React.FC<EditorProps> = ({
 									{offeringConfig.qrImageUrl && (
 										<button
 											onClick={() => onOfferingChange({ qrImageUrl: "" })}
-											className="p-3 text-zinc-500 hover:text-red-400 bg-zinc-900 border border-white/5 rounded-xl transition-colors"
+											className="p-3 text-zinc-500 hover:text-red-400 bg-zinc-900/70 border border-white/10 rounded-xl transition-colors backdrop-blur"
 										>
 											<Trash2 size={16} />
 										</button>
@@ -469,7 +469,7 @@ const Editor: React.FC<EditorProps> = ({
 							</div>
 						</div>
 
-						<div className="p-6 bg-zinc-900 rounded-2xl flex flex-col items-center gap-4 text-center border border-white/5">
+						<div className="p-6 bg-zinc-900/70 backdrop-blur rounded-2xl flex flex-col items-center gap-4 text-center border border-white/10">
 							<div className="w-24 h-24 bg-white rounded-xl flex items-center justify-center p-2">
 								{offeringConfig.qrImageUrl ? (
 									<img

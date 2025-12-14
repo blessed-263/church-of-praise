@@ -108,10 +108,10 @@ const SlideDisplay: React.FC<SlideDisplayProps> = ({
             animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
             exit={{ opacity: 0, y: -20, filter: 'blur(5px)' }}
             transition={{ duration: 0.4, ease: "easeOut" }}
-            className="relative z-10 w-full px-20 max-w-7xl mx-auto"
+            className="relative z-10 w-full px-12 md:px-20 max-w-6xl mx-auto"
           >
             <p 
-              className="whitespace-pre-wrap leading-tight tracking-tight font-extrabold font-display drop-shadow-xl"
+              className="whitespace-pre-wrap leading-tight md:leading-[0.98] tracking-tight font-extrabold font-display drop-shadow-xl"
               style={{ fontSize: fontSizeStyle }}
             >
               {content}

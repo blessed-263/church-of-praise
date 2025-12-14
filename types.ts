@@ -35,7 +35,7 @@ export interface GeminiError {
 // Default Constants used in App.tsx
 export const INITIAL_THEME: SlideTheme = {
   type: 'image',
-  value: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2000&auto=format&fit=crop', // Abstract Blue Fluid
+  value: '/backgrounds/blue-fluid.jpg', // Abstract Blue Fluid (local)
   fontFamily: '"Outfit", sans-serif',
   overlayOpacity: 0.2,
   fontSize: 1.0,

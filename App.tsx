@@ -227,7 +227,11 @@ function App() {
               
               // 1. Handle Background
               if (theme.type === 'image') {
-                document.body.style.background = 'url(' + theme.value + ') center/cover no-repeat';
+                const origin = (window.opener && window.opener.location) ? window.opener.location.origin : window.location.origin;
+                const imgUrl = (typeof theme.value === 'string' && theme.value.startsWith('/'))
+                  ? origin + theme.value
+                  : theme.value;
+                document.body.style.background = 'url(' + imgUrl + ') center/cover no-repeat';
               } else {
                 document.body.style.background = theme.value;
               }
@@ -276,7 +280,10 @@ function App() {
                    title.style.lineHeight = '0.9';
                    
                    const img = document.createElement('img');
-                   img.src = offeringConfig.qrImageUrl;
+                   const origin = (window.opener && window.opener.location) ? window.opener.location.origin : window.location.origin;
+                   img.src = (offeringConfig.qrImageUrl && offeringConfig.qrImageUrl.startsWith('/')) 
+                              ? origin + offeringConfig.qrImageUrl 
+                              : offeringConfig.qrImageUrl;
                    img.style.width = '18vw';
                    img.style.height = '18vw';
                    img.style.objectFit = 'contain';

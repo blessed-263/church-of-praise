@@ -13,7 +13,7 @@ import {
 	Book,
 	ChevronDown,
 } from "lucide-react";
-import { SlideTheme, OfferingConfig } from "../types";
+import { SlideTheme, OfferingConfig, INITIAL_THEME } from "../types";
 import { searchBible, BibleVersion } from "../services/bibleService";
 
 interface EditorProps {
@@ -27,11 +27,16 @@ interface EditorProps {
 
 // Modern, Abstract, Youth-oriented Presets
 const PRESET_IMAGES = [
-	"https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2000&auto=format&fit=crop", // Blue Fluid
-	"https://images.unsplash.com/photo-1614851099511-773084f6911d?q=80&w=2000&auto=format&fit=crop", // Purple Gradient
-	"https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=2000&auto=format&fit=crop", // Liquid
-	"https://images.unsplash.com/photo-1634017839464-5c339ebe3cb4?q=80&w=2000&auto=format&fit=crop", // 3D Shapes
-	"https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2000&auto=format&fit=crop", // Tech Earth
+	"/backgrounds/blue-fluid.jpg",
+	"/backgrounds/purple-gradient.jpg",
+	"/backgrounds/liquid.jpg",
+	"/backgrounds/shapes.jpg",
+	"/backgrounds/earth.jpg",
+	"/backgrounds/mountains.jpg",
+	"/backgrounds/ocean-waves.jpg",
+	"/backgrounds/aurora.jpg",
+	"/backgrounds/galaxy.jpg",
+	"/backgrounds/city-night.jpg",
 ];
 
 const PRESET_GRADIENTS = [
@@ -55,6 +60,22 @@ const PRESET_GRADIENTS = [
 	{
 		name: "Forest",
 		value: "linear-gradient(to bottom right, #022c22, #047857)",
+	},
+	{
+		name: "Midnight",
+		value: "linear-gradient(to bottom right, #0b132b, #1c2541)",
+	},
+	{
+		name: "Indigo Glow",
+		value: "linear-gradient(to bottom right, #1e1b4b, #6366f1)",
+	},
+	{
+		name: "Teal",
+		value: "linear-gradient(to bottom right, #0f766e, #134e4a)",
+	},
+	{
+		name: "Crimson",
+		value: "linear-gradient(to bottom right, #3f0d12, #a71d31)",
 	},
 ];
 
@@ -263,11 +284,19 @@ const Editor: React.FC<EditorProps> = ({
 						<div className="p-6 space-y-8">
 							{/* Backgrounds */}
 							<div className="space-y-4">
-								<label className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest flex items-center gap-2">
-									Visuals
-								</label>
+								<div className="flex items-center justify-between">
+									<label className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest flex items-center gap-2">
+										Visuals
+									</label>
+									<button
+										onClick={() => onThemeChange({ ...INITIAL_THEME })}
+										className="text-[10px] text-zinc-400 hover:text-white px-2 py-1 rounded-md hover:bg-white/5 transition-colors"
+									>
+										Reset
+									</button>
+								</div>
 
-								<div className="grid grid-cols-2 gap-3">
+								<div className="grid grid-cols-3 gap-3">
 									{PRESET_IMAGES.map((url, i) => (
 										<button
 											key={i}

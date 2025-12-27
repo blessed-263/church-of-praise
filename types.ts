@@ -47,9 +47,21 @@ export const INITIAL_OFFERING: OfferingConfig = {
   qrImageUrl: "" // Empty by default
 };
 
-export const INITIAL_LYRICS = `Way Maker
-Miracle Worker
-Promise Keeper
-Light in the darkness
-My God
-That is who You are`;
+export const INITIAL_LYRICS = `EVERYBODY PRAISE THE LORD NOW
+
+Verse 1:
+Everybody praise the Lord now,
+I will praise Him every day,
+Praise the Lord now,
+I will praise the Lord
+
+Chorus:
+Jehovah,
+Jeho... Jeho.... Jeho...
+Jeho! Jehovah!!
+
+Verse 2:
+Everybody blow your trumpet
+Para rararara
+Blow your trumpet
+Parararara`;

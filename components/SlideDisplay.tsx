@@ -80,7 +80,7 @@ const SlideDisplay: React.FC<SlideDisplayProps> = ({
                   <img 
                     src={offeringConfig.qrImageUrl} 
                     alt="Scan to Give" 
-                    className="w-56 h-56 md:w-72 md:h-72 object-contain"
+                    className="w-[30rem] h-[30rem] md:w-[40rem] md:h-[40rem] object-contain"
                   />
                   
                   {/* Scan Corners */}

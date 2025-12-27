@@ -184,7 +184,7 @@ function App() {
       <head>
         <meta charset="UTF-8" />
         <title>Church of Praise - Output</title>
-        <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Great+Vibes&family=Montserrat:wght@400;700;800&family=Mountains+of+Christmas:wght@400;700&family=Open+Sans:wght@400;600;700&family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
         <style>
           body { margin: 0; overflow: hidden; background: #000; font-family: 'Outfit', sans-serif; transition: background 0.5s ease; }
           #root { width: 100vw; height: 100vh; display: flex; align-items: center; justify-content: center; position: relative; }
@@ -217,6 +217,48 @@ function App() {
           let currentContent = null;
           let currentMode = 'normal'; // 'normal', 'offering', 'blackout'
           
+          // Cursor hiding logic
+          let mouseTimer = null;
+          document.addEventListener('mousemove', () => {
+            document.body.style.cursor = 'default';
+            clearTimeout(mouseTimer);
+            mouseTimer = setTimeout(() => {
+              document.body.style.cursor = 'none';
+            }, 2000);
+          });
+
+          // Fullscreen logic
+          document.addEventListener('dblclick', () => {
+            if (!document.fullscreenElement) {
+              document.documentElement.requestFullscreen().catch(e => console.error(e));
+            } else {
+              document.exitFullscreen();
+            }
+          });
+
+          // Show startup hint
+          const hint = document.createElement('div');
+          hint.textContent = "Double-click for Fullscreen";
+          hint.style.position = 'absolute';
+          hint.style.top = '20px';
+          hint.style.left = '50%';
+          hint.style.transform = 'translateX(-50%)';
+          hint.style.color = 'rgba(255,255,255,0.5)';
+          hint.style.fontFamily = 'sans-serif';
+          hint.style.fontSize = '12px';
+          hint.style.pointerEvents = 'none';
+          hint.style.transition = 'opacity 1s';
+          hint.style.zIndex = '9999';
+          hint.style.background = 'rgba(0,0,0,0.5)';
+          hint.style.padding = '4px 12px';
+          hint.style.borderRadius = '20px';
+          document.body.appendChild(hint);
+
+          setTimeout(() => {
+            hint.style.opacity = '0';
+            setTimeout(() => hint.remove(), 1000);
+          }, 4000);
+
           function render() {
             try {
               const data = JSON.parse(localStorage.getItem(STORAGE_KEY));
@@ -284,8 +326,8 @@ function App() {
                    img.src = (offeringConfig.qrImageUrl && offeringConfig.qrImageUrl.startsWith('/')) 
                               ? origin + offeringConfig.qrImageUrl 
                               : offeringConfig.qrImageUrl;
-                   img.style.width = '18vw';
-                   img.style.height = '18vw';
+                   img.style.width = '45vw';
+                   img.style.height = '45vw';
                    img.style.objectFit = 'contain';
                    img.style.borderRadius = '20px';
                    img.style.marginBottom = '2rem';

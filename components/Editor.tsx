@@ -26,17 +26,45 @@ interface EditorProps {
 }
 
 // Modern, Abstract, Youth-oriented Presets
+const PRESET_FONTS = [
+  { name: 'Outfit', value: '"Outfit", sans-serif' },
+  { name: 'Inter', value: '"Inter", sans-serif' },
+  { name: 'Montserrat', value: '"Montserrat", sans-serif' },
+  { name: 'Playfair', value: '"Playfair Display", serif' },
+  { name: 'Open Sans', value: '"Open Sans", sans-serif' },
+  { name: 'Cinzel', value: '"Cinzel", serif' },
+  { name: 'Great Vibes', value: '"Great Vibes", cursive' },
+  { name: 'Mtns of Christmas', value: '"Mountains of Christmas", cursive' },
+];
+
 const PRESET_IMAGES = [
-	"/backgrounds/blue-fluid.jpg",
-	"/backgrounds/purple-gradient.jpg",
-	"/backgrounds/liquid.jpg",
-	"/backgrounds/shapes.jpg",
-	"/backgrounds/earth.jpg",
-	"/backgrounds/mountains.jpg",
-	"/backgrounds/ocean-waves.jpg",
-	"/backgrounds/aurora.jpg",
-	"/backgrounds/galaxy.jpg",
-	"/backgrounds/city-night.jpg",
+  // Christmas / Festive
+  '/backgrounds/christmas-lights.jpg',
+  '/backgrounds/winter-snow.jpg',
+  '/backgrounds/christmas-tree.jpg',
+  '/backgrounds/nativity-star.jpg',
+  '/backgrounds/christmas-wreath.jpg',
+  
+  // Worship & Nature
+  '/backgrounds/cross-sunset.jpg',
+  '/backgrounds/clouds-blue.jpg',
+  '/backgrounds/open-bible.jpg',
+  '/backgrounds/worship-hands.jpg',
+  '/backgrounds/abstract-gold.jpg',
+  '/backgrounds/morning-landscape.jpg',
+  '/backgrounds/starry-sky.jpg',
+  
+  // Standard
+  '/backgrounds/blue-fluid.jpg',
+  '/backgrounds/purple-gradient.jpg',
+  '/backgrounds/liquid.jpg',
+  '/backgrounds/shapes.jpg',
+  '/backgrounds/earth.jpg',
+  '/backgrounds/mountains.jpg',
+  '/backgrounds/ocean-waves.jpg',
+  '/backgrounds/aurora.jpg',
+  '/backgrounds/galaxy.jpg',
+  '/backgrounds/city-night.jpg',
 ];
 
 const PRESET_GRADIENTS = [
@@ -77,6 +105,152 @@ const PRESET_GRADIENTS = [
 		name: "Crimson",
 		value: "linear-gradient(to bottom right, #3f0d12, #a71d31)",
 	},
+];
+
+const SONG_LIBRARY = [
+  {
+    title: "Everybody Praise The Lord Now",
+    lyrics: `EVERYBODY PRAISE THE LORD NOW
+
+Verse 1:
+Everybody praise the Lord now,
+I will praise Him every day,
+Praise the Lord now,
+I will praise the Lord
+
+Chorus:
+Jehovah,
+Jeho... Jeho.... Jeho...
+Jeho! Jehovah!!
+
+Verse 2:
+Everybody blow your trumpet
+Para rararara
+Blow your trumpet
+Parararara`
+  },
+  {
+    title: "Jehovah Eh",
+    lyrics: `JEHOVAH EH
+
+Chorus:
+Jehovah eh eh
+Jehovah ah ah
+Jehovah eh eh
+Jehovah ah ah
+Jehovah eh eh
+Jehovah ah ah
+Jehovah eh eh
+Jehovah ah ah
+
+Verse:
+Jehovah
+You are the most high
+You are the most high God
+You are the most high
+You are the most high God
+You are the most high
+You are the most high God
+You are the most high
+You are the most high God
+You are the most high
+You are the most high God`
+  },
+  {
+    title: "Give Me Oil In My Lamp",
+    lyrics: `GIVE ME OIL IN MY LAMP
+
+Ah, ah-ah (ah, ah-ah, eh)
+Ah-eh, ah-ah (ah-eh, ah-ah, eh)
+Ah, ah-ah (ah, ah-ah, eh)
+Ah-eh, ah-ah (ah-eh, ah-ah, eh),
+
+Ah, ah-ah (ah, ah-ah, eh)
+Ah-eh, ah-ah (ah-eh, ah-ah, eh)
+(Ah, ah-ah, eh)
+Ah-eh, ah-ah (ah-eh, ah-ah, eh)
+
+Give me oil in my lamp
+May my light never be dim
+Keep me burning, keep me burning
+Until the coming of the King, ay
+
+Give me oil in my lamp, Lord
+May my light never be dim
+Keep me burning, keep me burning
+Until the coming of the King
+
+Give me oil in my lamp (give me oil in my lamp)
+May my light never be dim (may my light never be dim)
+Keep me burning, keep me burning (keep me burning, keep me burning)
+'Til the coming of the King (until the coming of the King)
+
+Give me oil in my lamp, Lord (give me oil in my lamp)
+May my light never be dim (may my light never be dim)
+(Keep me burnin', keep me burning)
+'Til the coming of the King ('til the coming of the King)
+
+Everybody sing`
+  },
+  {
+    title: "Worthy of it All",
+    lyrics: `WORTHY OF IT ALL
+
+Verse 1:
+All the saints and angels, they bow before Your throne
+All the elders cast their crowns before the Lamb of God and sing
+
+Chorus:
+You are worthy of it all
+You are worthy of it all, Jesus
+For from You are all things
+And to You are all things
+You deserve the glory
+
+Post-Chorus:
+Singing oh-ooh, oh-ooh, oooh-ooh-oh
+Oh-ooh, oooh-ooh-oh-ooh
+Oh-ooh, oh-ooh, oooh
+Oh-ooh-ooh, oh-ooh, oh-oooh-ooh
+
+Verse 2:
+All the saints and angels, they bow before Your throne
+All the elders cast their crowns before the Lamb of God and sing
+
+Chorus:
+You are worthy of it all
+You are worthy of it all, Jesus
+For from You are all things
+And to You are all things
+You deserve the glory!
+
+Bridge:
+Day and night, night and day, let incense arise
+Day and night, night and day, let incense arise!
+Day and night, night and day, let incense arise!
+Day and night, night and day, let incense arise!
+
+Chorus:
+You are worthy of it all
+You are worthy of it all
+For from You are all things
+And to You are all things
+You deserve the glory!`
+  },
+  {
+    title: "Way Maker",
+    lyrics: `WAY MAKER
+
+Verse 1:
+You are here moving in our midst
+I worship You I worship You
+You are here working in this place
+I worship You I worship You
+
+Chorus:
+Way Maker, Miracle Worker, Promise Keeper
+Light in the darkness my God that is who You are`
+  }
 ];
 
 const Editor: React.FC<EditorProps> = ({
@@ -176,15 +350,35 @@ const Editor: React.FC<EditorProps> = ({
 				{/* LYRICS TAB */}
 				{activeTab === "lyrics" && (
 					<div className="flex flex-col h-full animate-in fade-in zoom-in-95 duration-200">
-						<div className="px-6 pb-2 flex items-center justify-between">
-							<span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">
-								Editor
-							</span>
+						<div className="px-6 pb-2 flex items-center justify-between gap-2">
+							<div className="flex items-center gap-2 flex-1">
+								<span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest shrink-0">
+									Editor
+								</span>
+								<select
+									className="bg-zinc-900/70 border border-white/10 rounded-lg px-2 py-1 text-xs text-zinc-300 focus:outline-none focus:text-white w-full max-w-[180px]"
+									onChange={(e) => {
+										const song = SONG_LIBRARY.find((s) => s.title === e.target.value);
+										if (song) onTextChange(song.lyrics);
+										e.target.value = ""; // Reset selection
+									}}
+									defaultValue=""
+								>
+									<option value="" disabled>
+										Load Song...
+									</option>
+									{SONG_LIBRARY.map((song) => (
+										<option key={song.title} value={song.title}>
+											{song.title}
+										</option>
+									))}
+								</select>
+							</div>
 							<button
 								onClick={() => {
 									if (confirm("Clear all text?")) onTextChange("");
 								}}
-								className="text-[10px] font-medium text-zinc-600 hover:text-red-400 transition-colors"
+								className="text-[10px] font-medium text-zinc-600 hover:text-red-400 transition-colors shrink-0"
 							>
 								Clear All
 							</button>
@@ -379,6 +573,29 @@ const Editor: React.FC<EditorProps> = ({
 
 							{/* Typography Settings */}
 							<div className="space-y-6 pt-6 border-t border-white/5">
+                {/* Font Family */}
+                <div>
+                  <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-3 block">
+                    Font Style
+                  </label>
+                  <div className="grid grid-cols-2 gap-2">
+                    {PRESET_FONTS.map((font) => (
+                      <button
+                        key={font.name}
+                        onClick={() => onThemeChange({ fontFamily: font.value })}
+                        className={`px-3 py-2 rounded-lg text-xs transition-all border ${
+                          currentTheme.fontFamily === font.value
+                            ? "bg-white text-black border-white font-bold"
+                            : "bg-zinc-800 text-zinc-400 border-transparent hover:text-zinc-200 hover:bg-zinc-700"
+                        }`}
+                        style={{ fontFamily: font.value }}
+                      >
+                        {font.name}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
 								{/* Overlay Opacity */}
 								<div>
 									<label className="flex justify-between text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-3">

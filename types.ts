@@ -35,16 +35,16 @@ export interface GeminiError {
 // Default Constants used in App.tsx
 export const INITIAL_THEME: SlideTheme = {
   type: 'image',
-  value: '/backgrounds/blue-fluid.jpg', // Abstract Blue Fluid (local)
-  fontFamily: '"Outfit", sans-serif',
-  overlayOpacity: 0.2,
+  value: '/backgrounds/sanctuary-light.jpg',
+  fontFamily: '"Fraunces", serif',
+  overlayOpacity: 0.18,
   fontSize: 1.0,
 };
 
 export const INITIAL_OFFERING: OfferingConfig = {
-  title: "Giving",
-  subTitle: "Scan via App or Mobile Banking",
-  qrImageUrl: "" // Empty by default
+  title: "Offering",
+  subTitle: "Scan to give",
+  qrImageUrl: "/giving-qr.png",
 };
 
 export const INITIAL_LYRICS = `EVERYBODY PRAISE THE LORD NOW

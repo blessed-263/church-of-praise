@@ -32,66 +32,52 @@ const SlideDisplay: React.FC<SlideDisplayProps> = ({
     justifyContent: 'center',
     color: 'white',
     fontFamily: theme.fontFamily,
-    textShadow: '0 10px 30px rgba(0,0,0,0.5)',
+    textShadow: '0 8px 28px rgba(62,48,38,0.4)',
     textAlign: 'center',
   };
 
   if (isBlackout) {
     return (
-      <div className="w-full h-full bg-black transition-colors duration-500 ease-in-out">
-         {/* Blank */}
+      <div className="w-full h-full bg-[#1a1612]">
       </div>
     );
   }
 
-  // Calculate font size but cap it for safety
   const rawSize = 5 * (theme.fontSize || 1);
   const fontSizeStyle = isPreview ? '1rem' : `${Math.min(rawSize, 12)}vw`;
 
   return (
-    <div style={containerStyle} className="transition-all duration-700 ease-in-out">
-      <div 
-        className="absolute inset-0 bg-black transition-opacity duration-500"
-        style={{ opacity: theme.overlayOpacity }}
+    <div style={containerStyle}>
+      <div
+        className="absolute inset-0"
+        style={{ opacity: theme.overlayOpacity, background: '#3a2f26' }}
       />
 
-      {/* OFFERING OVERLAY - MODERN CARD STYLE */}
       <AnimatePresence>
         {isOffering && offeringConfig && (
           <motion.div
-            initial={{ opacity: 0, scale: 0.9, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-            className="absolute inset-0 z-30 flex items-center justify-center p-8"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 8 }}
+            transition={{ duration: 0.25 }}
+            className="absolute inset-0 z-30 flex items-center justify-center p-6"
           >
-            <div className="bg-zinc-950/80 backdrop-blur-2xl border border-white/10 rounded-[3rem] p-16 md:p-20 max-w-5xl w-full shadow-[0_40px_80px_-20px_rgba(0,0,0,1)] flex flex-col items-center text-center relative overflow-hidden">
-              
-              {/* Background Glow */}
-              <div className="absolute top-0 inset-x-0 h-40 bg-gradient-to-b from-indigo-500/10 to-transparent pointer-events-none" />
-
-              <h1 className="text-5xl md:text-7xl font-extrabold mb-12 text-white font-display tracking-tight leading-none">
+            <div className="bg-[#fffaf4] border border-stone-200 rounded-[2rem] py-6 px-8 md:py-8 md:px-12 max-h-full max-w-3xl w-full flex flex-col items-center text-center overflow-hidden">
+              <h1 className="text-3xl md:text-5xl font-semibold mb-4 text-stone-800 font-display leading-none shrink-0">
                 {offeringConfig.title}
               </h1>
-              
+
               {offeringConfig.qrImageUrl && (
-                <div className="relative p-6 bg-white rounded-3xl shadow-2xl mb-12 group transition-transform hover:scale-105 duration-500">
-                   <div className="absolute inset-0 bg-gradient-to-tr from-indigo-500 to-purple-500 opacity-0 group-hover:opacity-10 rounded-3xl transition-opacity" />
-                  <img 
-                    src={offeringConfig.qrImageUrl} 
-                    alt="Scan to Give" 
-                    className="w-[30rem] h-[30rem] md:w-[40rem] md:h-[40rem] object-contain"
+                <div className="p-3 bg-white border border-stone-200 rounded-2xl mb-4 min-h-0 flex items-center justify-center">
+                  <img
+                    src={offeringConfig.qrImageUrl}
+                    alt="Scan for offering"
+                    className="w-44 h-44 md:w-56 md:h-56 object-contain"
                   />
-                  
-                  {/* Scan Corners */}
-                  <div className="absolute top-4 left-4 w-6 h-6 border-t-4 border-l-4 border-black rounded-tl-lg opacity-20" />
-                  <div className="absolute top-4 right-4 w-6 h-6 border-t-4 border-r-4 border-black rounded-tr-lg opacity-20" />
-                  <div className="absolute bottom-4 left-4 w-6 h-6 border-b-4 border-l-4 border-black rounded-bl-lg opacity-20" />
-                  <div className="absolute bottom-4 right-4 w-6 h-6 border-b-4 border-r-4 border-black rounded-br-lg opacity-20" />
                 </div>
               )}
 
-              <p className="text-2xl md:text-4xl text-zinc-400 font-display font-medium tracking-tight">
+              <p className="text-lg md:text-2xl text-stone-500 font-display shrink-0">
                 {offeringConfig.subTitle}
               </p>
             </div>
@@ -99,19 +85,18 @@ const SlideDisplay: React.FC<SlideDisplayProps> = ({
         )}
       </AnimatePresence>
 
-      {/* SLIDE CONTENT */}
       <AnimatePresence mode="wait">
         {!isClear && !isOffering && content && (
           <motion.div
             key={content}
-            initial={{ opacity: 0, y: 20, filter: 'blur(10px)' }}
-            animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-            exit={{ opacity: 0, y: -20, filter: 'blur(5px)' }}
-            transition={{ duration: 0.4, ease: "easeOut" }}
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -12 }}
+            transition={{ duration: 0.3, ease: "easeOut" }}
             className="relative z-10 w-full px-12 md:px-20 max-w-6xl mx-auto"
           >
-            <p 
-              className="whitespace-pre-wrap leading-tight md:leading-[0.98] tracking-tight font-extrabold font-display drop-shadow-xl"
+            <p
+              className="whitespace-pre-wrap leading-tight md:leading-[1.05] font-semibold font-display"
               style={{ fontSize: fontSizeStyle }}
             >
               {content}

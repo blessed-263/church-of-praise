@@ -1,20 +1,22 @@
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
 	Type,
-	Image as ImageIcon,
 	Plus,
-	Search,
 	Check,
 	QrCode,
 	Upload,
-	Trash2,
 	Settings2,
 	AlignLeft,
 	Book,
-	ChevronDown,
+	ChevronRight,
+	Search,
 } from "lucide-react";
 import { SlideTheme, OfferingConfig, INITIAL_THEME } from "../types";
-import { searchBible, BibleVersion } from "../services/bibleService";
+import { BibleVersion, BibleVerse, fetchChapter } from "../services/bibleService";
+import { BIBLE_BOOKS, parsePassageQuery, searchBibleBooks } from "../services/bibleBooks";
+import { SONG_LIBRARY } from "../services/songLibrary";
+
+export type EditorTab = "lyrics" | "bible" | "theme" | "offering";
 
 interface EditorProps {
 	rawText: string;
@@ -23,234 +25,75 @@ interface EditorProps {
 	currentTheme: SlideTheme;
 	offeringConfig: OfferingConfig;
 	onOfferingChange: (config: Partial<OfferingConfig>) => void;
+	activeTab?: EditorTab;
+	onTabChange?: (tab: EditorTab) => void;
+	showTabs?: boolean;
 }
 
 // Modern, Abstract, Youth-oriented Presets
 const PRESET_FONTS = [
-  { name: 'Outfit', value: '"Outfit", sans-serif' },
-  { name: 'Inter', value: '"Inter", sans-serif' },
-  { name: 'Montserrat', value: '"Montserrat", sans-serif' },
+  { name: 'Fraunces', value: '"Fraunces", serif' },
+  { name: 'Jakarta', value: '"Plus Jakarta Sans", sans-serif' },
+  { name: 'Cormorant', value: '"Cormorant Garamond", serif' },
+  { name: 'Newsreader', value: '"Newsreader", serif' },
+  { name: 'Instrument', value: '"Instrument Serif", serif' },
+  { name: 'DM Sans', value: '"DM Sans", sans-serif' },
   { name: 'Playfair', value: '"Playfair Display", serif' },
-  { name: 'Open Sans', value: '"Open Sans", sans-serif' },
+  { name: 'Lora', value: '"Lora", serif' },
+  { name: 'Libre Baskerville', value: '"Libre Baskerville", serif' },
+  { name: 'Spectral', value: '"Spectral", serif' },
+  { name: 'Crimson', value: '"Crimson Pro", serif' },
   { name: 'Cinzel', value: '"Cinzel", serif' },
+  { name: 'Outfit', value: '"Outfit", sans-serif' },
+  { name: 'Montserrat', value: '"Montserrat", sans-serif' },
+  { name: 'Josefin', value: '"Josefin Sans", sans-serif' },
+  { name: 'Bebas', value: '"Bebas Neue", sans-serif' },
+  { name: 'Italiana', value: '"Italiana", serif' },
   { name: 'Great Vibes', value: '"Great Vibes", cursive' },
-  { name: 'Mtns of Christmas', value: '"Mountains of Christmas", cursive' },
+  { name: 'Allura', value: '"Allura", cursive' },
+  { name: 'Amiri', value: '"Amiri", serif' },
 ];
 
 const PRESET_IMAGES = [
-  // Christmas / Festive
+  '/backgrounds/sanctuary-light.jpg',
+  '/backgrounds/dawn-water.jpg',
+  '/backgrounds/olive-hills.jpg',
+  '/backgrounds/gold-bokeh.jpg',
+  '/backgrounds/soft-clouds.jpg',
+  '/backgrounds/morning-ocean.jpg',
+  '/backgrounds/wildflower-meadow.jpg',
+  '/backgrounds/open-word.jpg',
+  '/backgrounds/desert-sunrise.jpg',
+  '/backgrounds/forest-mist.jpg',
+  '/backgrounds/stained-glass.jpg',
+  '/backgrounds/wheat-field.jpg',
+  '/backgrounds/still-lake.jpg',
+  '/backgrounds/candle-glow.jpg',
+  '/backgrounds/open-sky.jpg',
+  '/backgrounds/linen-light.jpg',
   '/backgrounds/christmas-lights.jpg',
   '/backgrounds/winter-snow.jpg',
   '/backgrounds/christmas-tree.jpg',
   '/backgrounds/nativity-star.jpg',
-  '/backgrounds/christmas-wreath.jpg',
-  
-  // Worship & Nature
   '/backgrounds/cross-sunset.jpg',
   '/backgrounds/clouds-blue.jpg',
   '/backgrounds/open-bible.jpg',
   '/backgrounds/worship-hands.jpg',
   '/backgrounds/abstract-gold.jpg',
   '/backgrounds/morning-landscape.jpg',
-  '/backgrounds/starry-sky.jpg',
-  
-  // Standard
-  '/backgrounds/blue-fluid.jpg',
-  '/backgrounds/purple-gradient.jpg',
-  '/backgrounds/liquid.jpg',
-  '/backgrounds/shapes.jpg',
-  '/backgrounds/earth.jpg',
-  '/backgrounds/mountains.jpg',
   '/backgrounds/ocean-waves.jpg',
+  '/backgrounds/mountains.jpg',
+  '/backgrounds/starry-sky.jpg',
   '/backgrounds/aurora.jpg',
-  '/backgrounds/galaxy.jpg',
-  '/backgrounds/city-night.jpg',
 ];
 
-const PRESET_GRADIENTS = [
-	{ name: "Carbon", value: "#09090b" },
-	{
-		name: "Deep Blue",
-		value: "linear-gradient(to bottom right, #0f172a, #1e1b4b)",
-	},
-	{
-		name: "Violet",
-		value: "linear-gradient(to bottom right, #2e1065, #4c1d95)",
-	},
-	{
-		name: "Cyber",
-		value: "linear-gradient(to bottom right, #020617, #0e7490)",
-	},
-	{
-		name: "Sunset",
-		value: "linear-gradient(to bottom right, #4a044e, #b91c1c)",
-	},
-	{
-		name: "Forest",
-		value: "linear-gradient(to bottom right, #022c22, #047857)",
-	},
-	{
-		name: "Midnight",
-		value: "linear-gradient(to bottom right, #0b132b, #1c2541)",
-	},
-	{
-		name: "Indigo Glow",
-		value: "linear-gradient(to bottom right, #1e1b4b, #6366f1)",
-	},
-	{
-		name: "Teal",
-		value: "linear-gradient(to bottom right, #0f766e, #134e4a)",
-	},
-	{
-		name: "Crimson",
-		value: "linear-gradient(to bottom right, #3f0d12, #a71d31)",
-	},
-];
-
-const SONG_LIBRARY = [
-  {
-    title: "Everybody Praise The Lord Now",
-    lyrics: `EVERYBODY PRAISE THE LORD NOW
-
-Verse 1:
-Everybody praise the Lord now,
-I will praise Him every day,
-Praise the Lord now,
-I will praise the Lord
-
-Chorus:
-Jehovah,
-Jeho... Jeho.... Jeho...
-Jeho! Jehovah!!
-
-Verse 2:
-Everybody blow your trumpet
-Para rararara
-Blow your trumpet
-Parararara`
-  },
-  {
-    title: "Jehovah Eh",
-    lyrics: `JEHOVAH EH
-
-Chorus:
-Jehovah eh eh
-Jehovah ah ah
-Jehovah eh eh
-Jehovah ah ah
-Jehovah eh eh
-Jehovah ah ah
-Jehovah eh eh
-Jehovah ah ah
-
-Verse:
-Jehovah
-You are the most high
-You are the most high God
-You are the most high
-You are the most high God
-You are the most high
-You are the most high God
-You are the most high
-You are the most high God
-You are the most high
-You are the most high God`
-  },
-  {
-    title: "Give Me Oil In My Lamp",
-    lyrics: `GIVE ME OIL IN MY LAMP
-
-Ah, ah-ah (ah, ah-ah, eh)
-Ah-eh, ah-ah (ah-eh, ah-ah, eh)
-Ah, ah-ah (ah, ah-ah, eh)
-Ah-eh, ah-ah (ah-eh, ah-ah, eh),
-
-Ah, ah-ah (ah, ah-ah, eh)
-Ah-eh, ah-ah (ah-eh, ah-ah, eh)
-(Ah, ah-ah, eh)
-Ah-eh, ah-ah (ah-eh, ah-ah, eh)
-
-Give me oil in my lamp
-May my light never be dim
-Keep me burning, keep me burning
-Until the coming of the King, ay
-
-Give me oil in my lamp, Lord
-May my light never be dim
-Keep me burning, keep me burning
-Until the coming of the King
-
-Give me oil in my lamp (give me oil in my lamp)
-May my light never be dim (may my light never be dim)
-Keep me burning, keep me burning (keep me burning, keep me burning)
-'Til the coming of the King (until the coming of the King)
-
-Give me oil in my lamp, Lord (give me oil in my lamp)
-May my light never be dim (may my light never be dim)
-(Keep me burnin', keep me burning)
-'Til the coming of the King ('til the coming of the King)
-
-Everybody sing`
-  },
-  {
-    title: "Worthy of it All",
-    lyrics: `WORTHY OF IT ALL
-
-Verse 1:
-All the saints and angels, they bow before Your throne
-All the elders cast their crowns before the Lamb of God and sing
-
-Chorus:
-You are worthy of it all
-You are worthy of it all, Jesus
-For from You are all things
-And to You are all things
-You deserve the glory
-
-Post-Chorus:
-Singing oh-ooh, oh-ooh, oooh-ooh-oh
-Oh-ooh, oooh-ooh-oh-ooh
-Oh-ooh, oh-ooh, oooh
-Oh-ooh-ooh, oh-ooh, oh-oooh-ooh
-
-Verse 2:
-All the saints and angels, they bow before Your throne
-All the elders cast their crowns before the Lamb of God and sing
-
-Chorus:
-You are worthy of it all
-You are worthy of it all, Jesus
-For from You are all things
-And to You are all things
-You deserve the glory!
-
-Bridge:
-Day and night, night and day, let incense arise
-Day and night, night and day, let incense arise!
-Day and night, night and day, let incense arise!
-Day and night, night and day, let incense arise!
-
-Chorus:
-You are worthy of it all
-You are worthy of it all
-For from You are all things
-And to You are all things
-You deserve the glory!`
-  },
-  {
-    title: "Way Maker",
-    lyrics: `WAY MAKER
-
-Verse 1:
-You are here moving in our midst
-I worship You I worship You
-You are here working in this place
-I worship You I worship You
-
-Chorus:
-Way Maker, Miracle Worker, Promise Keeper
-Light in the darkness my God that is who You are`
-  }
+const PRESET_COLORS = [
+	{ name: "Cream", value: "#efe6d6" },
+	{ name: "Sand", value: "#d8c4a4" },
+	{ name: "Sage", value: "#7d9a86" },
+	{ name: "Sky", value: "#8aa4b5" },
+	{ name: "Clay", value: "#c4a484" },
+	{ name: "Linen", value: "#f3eee6" },
 ];
 
 const Editor: React.FC<EditorProps> = ({
@@ -260,48 +103,138 @@ const Editor: React.FC<EditorProps> = ({
 	currentTheme,
 	offeringConfig,
 	onOfferingChange,
+	activeTab: controlledTab,
+	onTabChange,
+	showTabs = true,
 }) => {
-	const [activeTab, setActiveTab] = useState<
-		"lyrics" | "bible" | "theme" | "offering"
-	>("lyrics");
+	const [internalTab, setInternalTab] = useState<EditorTab>("lyrics");
+	const activeTab = controlledTab ?? internalTab;
+	const setActiveTab = (tab: EditorTab) => {
+		onTabChange?.(tab);
+		if (controlledTab === undefined) setInternalTab(tab);
+	};
 
 	// Bible State
-	const [bibleQuery, setBibleQuery] = useState("");
 	const [bibleVersion, setBibleVersion] = useState<BibleVersion>("web");
-	const [foundVerse, setFoundVerse] = useState<{
-		ref: string;
-		text: string;
-	} | null>(null);
+	const [bibleBook, setBibleBook] = useState("John");
+	const [bibleChapter, setBibleChapter] = useState(3);
+	const [bibleVerse, setBibleVerse] = useState(16);
+	const [chapterVerses, setChapterVerses] = useState<BibleVerse[]>([]);
 	const [isLoadingVerse, setIsLoadingVerse] = useState(false);
 	const [bibleError, setBibleError] = useState("");
+	const [bibleSearch, setBibleSearch] = useState("");
+	const [scriptureSet, setScriptureSet] = useState<BibleVerse[]>([]);
 
-	const handleBibleSearch = async () => {
-		if (!bibleQuery.trim()) return;
-		setIsLoadingVerse(true);
-		setBibleError("");
-		setFoundVerse(null);
+	const selectedBook = useMemo(
+		() => BIBLE_BOOKS.find((book) => book.name === bibleBook) || BIBLE_BOOKS[0],
+		[bibleBook]
+	);
+	const selectedPassage = chapterVerses.find((item) => item.verse === bibleVerse) || null;
+	const nextPassage = chapterVerses.find((item) => item.verse === bibleVerse + 1) || null;
+	const parsedSearch = useMemo(() => parsePassageQuery(bibleSearch), [bibleSearch]);
+	const bookHits = useMemo(() => (bibleSearch.trim() ? searchBibleBooks(bibleSearch) : []), [bibleSearch]);
+	const visibleVerses = useMemo(() => {
+		const query = bibleSearch.trim().toLowerCase();
+		if (!query || parsedSearch.book) return chapterVerses;
+		return chapterVerses.filter(
+			(item) =>
+				String(item.verse).startsWith(query) ||
+				item.text.toLowerCase().includes(query)
+		);
+	}, [bibleSearch, chapterVerses, parsedSearch.book]);
 
-		try {
-			const result = await searchBible(bibleQuery, bibleVersion);
-			if (result) {
-				setFoundVerse({ ref: result.reference, text: result.text });
-			} else {
-				setBibleError("Passage not found.");
-			}
-		} catch (e) {
-			setBibleError("Connection error.");
-		} finally {
-			setIsLoadingVerse(false);
+	const applyPassage = (bookName: string, chapter?: number | null, verse?: number | null) => {
+		const book = BIBLE_BOOKS.find((item) => item.name === bookName);
+		if (!book) return;
+		setBibleBook(book.name);
+		const nextChapter =
+			chapter && chapter >= 1 && chapter <= book.chapters ? chapter : 1;
+		setBibleChapter(nextChapter);
+		setBibleVerse(verse && verse >= 1 ? verse : 1);
+	};
+
+	const submitBibleSearch = () => {
+		if (parsedSearch.book) {
+			applyPassage(parsedSearch.book.name, parsedSearch.chapter, parsedSearch.verse);
+			return;
+		}
+		if (bookHits[0]) {
+			applyPassage(bookHits[0].name);
 		}
 	};
 
+	useEffect(() => {
+		if (!parsedSearch.book || !parsedSearch.chapter || !parsedSearch.verse) return;
+		applyPassage(parsedSearch.book.name, parsedSearch.chapter, parsedSearch.verse);
+	}, [parsedSearch.book?.name, parsedSearch.chapter, parsedSearch.verse]);
+
+	useEffect(() => {
+		if (activeTab !== "bible") return;
+		let cancelled = false;
+		setIsLoadingVerse(true);
+		setBibleError("");
+		fetchChapter(`${bibleBook} ${bibleChapter}`, bibleVersion)
+			.then((chapter) => {
+				if (cancelled) return;
+				if (!chapter || chapter.verses.length === 0) {
+					setChapterVerses([]);
+					setBibleError("Chapter not found.");
+					return;
+				}
+				setChapterVerses(chapter.verses);
+				setBibleVerse((prev) => {
+					const exists = chapter.verses.some((item) => item.verse === prev);
+					return exists ? prev : chapter.verses[0].verse;
+				});
+			})
+			.catch(() => {
+				if (!cancelled) {
+					setChapterVerses([]);
+					setBibleError("Connection error.");
+				}
+			})
+			.finally(() => {
+				if (!cancelled) setIsLoadingVerse(false);
+			});
+		return () => {
+			cancelled = true;
+		};
+	}, [activeTab, bibleBook, bibleChapter, bibleVersion]);
+
+	useEffect(() => {
+		setScriptureSet([]);
+	}, [bibleBook, bibleChapter]);
+
+	const writeScripture = (verses: BibleVerse[]) => {
+		setScriptureSet(verses);
+		onTextChange(verses.map((item) => `${item.reference}\n${item.text}`).join("\n\n"));
+	};
+
+	const startScripture = (passage: BibleVerse) => {
+		writeScripture([passage]);
+	};
+
+	const appendPassage = (passage: BibleVerse) => {
+		if (scriptureSet.some((item) => item.reference === passage.reference)) {
+			writeScripture(scriptureSet);
+			return;
+		}
+		writeScripture(scriptureSet.length === 0 ? [passage] : [...scriptureSet, passage]);
+	};
+
 	const addVerseToSlides = () => {
-		if (!foundVerse) return;
-		const newContent = `${rawText}\n\n${foundVerse.ref}\n${foundVerse.text}`;
-		onTextChange(newContent.trim());
-		setBibleQuery("");
-		setFoundVerse(null);
-		setActiveTab("lyrics");
+		if (!selectedPassage) return;
+		startScripture(selectedPassage);
+	};
+
+	const addNextVerse = () => {
+		if (!nextPassage) return;
+		if (scriptureSet.length === 0 && selectedPassage) {
+			writeScripture([selectedPassage, nextPassage]);
+		} else {
+			appendPassage(nextPassage);
+		}
+		setBibleVerse(nextPassage.verse);
 	};
 
 	const handleFileUpload = (
@@ -319,23 +252,23 @@ const Editor: React.FC<EditorProps> = ({
 	};
 
 	return (
-		<div className="flex flex-col h-full">
-			{/* Modern Pill Tabs */}
-			<div className="px-4 py-4 shrink-0">
-				<div className="flex p-1 bg-zinc-900/70 backdrop-blur rounded-full border border-white/10">
+		<div className="flex flex-col h-full bg-transparent">
+			{showTabs && (
+			<div className="px-4 py-3 shrink-0">
+				<div className="flex gap-1 p-1 bg-stone-100 rounded-2xl">
 					{[
 						{ id: "lyrics", icon: AlignLeft, label: "Text" },
 						{ id: "bible", icon: Book, label: "Bible" },
 						{ id: "theme", icon: Settings2, label: "Style" },
-						{ id: "offering", icon: QrCode, label: "Give" },
+						{ id: "offering", icon: QrCode, label: "Offering" },
 					].map((tab) => (
 						<button
 							key={tab.id}
 							onClick={() => setActiveTab(tab.id as any)}
-							className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-full text-xs font-semibold transition-all duration-200 ${
+							className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-xl text-xs font-medium ${
 								activeTab === tab.id
-									? "bg-zinc-800 text-white shadow-sm ring-1 ring-white/10"
-									: "text-zinc-400 hover:text-zinc-200"
+									? "bg-white text-[#4f7a68] shadow-sm"
+									: "text-stone-500 hover:text-stone-800"
 							}`}
 						>
 							<tab.icon size={14} />
@@ -344,23 +277,27 @@ const Editor: React.FC<EditorProps> = ({
 					))}
 				</div>
 			</div>
+			)}
 
 			{/* Content Area */}
 			<div className="flex-1 flex flex-col min-h-0 relative">
 				{/* LYRICS TAB */}
 				{activeTab === "lyrics" && (
-					<div className="flex flex-col h-full animate-in fade-in zoom-in-95 duration-200">
-						<div className="px-6 pb-2 flex items-center justify-between gap-2">
+					<div className="flex flex-col h-full">
+						<div className="px-4 pb-2 flex items-center justify-between gap-2">
 							<div className="flex items-center gap-2 flex-1">
-								<span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest shrink-0">
+								<span className="text-[11px] font-medium text-stone-500 shrink-0">
 									Editor
 								</span>
 								<select
-									className="bg-zinc-900/70 border border-white/10 rounded-lg px-2 py-1 text-xs text-zinc-300 focus:outline-none focus:text-white w-full max-w-[180px]"
+									className="bg-white border border-stone-200 rounded-xl px-2 py-1 text-xs text-stone-800 focus:outline-none w-full max-w-[180px]"
 									onChange={(e) => {
 										const song = SONG_LIBRARY.find((s) => s.title === e.target.value);
-										if (song) onTextChange(song.lyrics);
-										e.target.value = ""; // Reset selection
+										if (song) {
+											setScriptureSet([]);
+											onTextChange(song.lyrics);
+										}
+										e.target.value = "";
 									}}
 									defaultValue=""
 								>
@@ -376,16 +313,19 @@ const Editor: React.FC<EditorProps> = ({
 							</div>
 							<button
 								onClick={() => {
-									if (confirm("Clear all text?")) onTextChange("");
+									if (confirm("Clear all text?")) {
+										setScriptureSet([]);
+										onTextChange("");
+									}
 								}}
-								className="text-[10px] font-medium text-zinc-600 hover:text-red-400 transition-colors shrink-0"
+								className="text-[11px] font-medium text-stone-500 hover:text-red-600 shrink-0"
 							>
 								Clear All
 							</button>
 						</div>
 
 						<textarea
-							className="flex-1 w-full bg-transparent text-zinc-100 p-6 border-none focus:ring-0 focus:outline-none resize-none font-sans text-sm leading-7 placeholder-zinc-600 selection:bg-white/10"
+							className="flex-1 w-full bg-transparent text-stone-800 p-4 border-none focus:ring-0 focus:outline-none resize-none font-sans text-sm leading-7 placeholder-stone-400"
 							placeholder="Paste lyrics here...&#10;&#10;Use double blank lines to separate slides."
 							value={rawText}
 							onChange={(e) => onTextChange(e.target.value)}
@@ -396,77 +336,183 @@ const Editor: React.FC<EditorProps> = ({
 
 				{/* BIBLE TAB */}
 				{activeTab === "bible" && (
-					<div className="p-6 space-y-6 overflow-y-auto h-full animate-in slide-in-from-left-4 duration-300 custom-scrollbar">
+					<div className="p-4 space-y-4 overflow-y-auto h-full">
 						<div className="space-y-3">
-							<label className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">
-								Scripture Search
+							<label className="text-[11px] font-medium text-stone-500">
+								Scripture
 							</label>
-
+							<div className="relative">
+								<Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400" />
+								<input
+									type="text"
+									value={bibleSearch}
+									onChange={(e) => setBibleSearch(e.target.value)}
+									onKeyDown={(e) => {
+										if (e.key === "Enter") {
+											e.preventDefault();
+											submitBibleSearch();
+										}
+									}}
+									placeholder="Search John 3:16, Psalms, love..."
+									className="w-full bg-white border border-stone-200 rounded-xl pl-8 pr-3 py-2.5 text-sm text-stone-800 focus:outline-none placeholder-stone-400"
+								/>
+							</div>
+							{bookHits.length > 0 && (
+								<div className="flex flex-wrap gap-1">
+									{bookHits.map((book) => (
+										<button
+											key={book.name}
+											onClick={() => {
+												applyPassage(
+													book.name,
+													parsedSearch.book?.name === book.name ? parsedSearch.chapter : 1,
+													parsedSearch.book?.name === book.name ? parsedSearch.verse : 1
+												);
+												if (parsedSearch.book?.name === book.name && parsedSearch.chapter) {
+													setBibleSearch("");
+												}
+											}}
+											className={`px-2.5 py-1 rounded-full text-xs border ${
+												book.name === bibleBook
+													? "bg-[#4f7a68] text-white border-[#4f7a68]"
+													: "bg-white text-stone-700 border-stone-200 hover:border-[#4f7a68]"
+											}`}
+										>
+											{book.name}
+										</button>
+									))}
+								</div>
+							)}
+							<select
+								value={bibleVersion}
+								onChange={(e) =>
+									setBibleVersion(e.target.value as BibleVersion)
+								}
+								className="w-full bg-white border border-stone-200 rounded-xl px-3 py-2 text-xs text-stone-800 focus:outline-none"
+							>
+								<option value="web">WEB</option>
+								<option value="kjv">KJV</option>
+								<option value="bbe">BBE</option>
+							</select>
+							<select
+								value={bibleBook}
+								onChange={(e) => {
+									setBibleBook(e.target.value);
+									setBibleChapter(1);
+									setBibleVerse(1);
+								}}
+								className="w-full bg-white border border-stone-200 rounded-xl px-3 py-2 text-sm text-stone-800 focus:outline-none"
+							>
+								{BIBLE_BOOKS.map((book) => (
+									<option key={book.name} value={book.name}>
+										{book.name}
+									</option>
+								))}
+							</select>
 							<div className="flex gap-2">
 								<select
-									value={bibleVersion}
-									onChange={(e) =>
-										setBibleVersion(e.target.value as BibleVersion)
-									}
-									className="bg-zinc-900/70 backdrop-blur border border-white/10 rounded-xl px-3 text-xs text-zinc-300 focus:outline-none focus:text-white transition-colors"
+									value={bibleChapter}
+									onChange={(e) => {
+										setBibleChapter(Number(e.target.value));
+										setBibleVerse(1);
+									}}
+									className="flex-1 bg-white border border-stone-200 rounded-xl px-3 py-2 text-sm text-stone-800 focus:outline-none"
 								>
-									<option value="web">WEB</option>
-									<option value="kjv">KJV</option>
-									<option value="bbe">BBE</option>
+									{Array.from({ length: selectedBook.chapters }, (_, i) => i + 1).map((chapter) => (
+										<option key={chapter} value={chapter}>
+											Chapter {chapter}
+										</option>
+									))}
 								</select>
-								<div className="flex-1 relative">
-									<input
-										type="text"
-										value={bibleQuery}
-										onChange={(e) => setBibleQuery(e.target.value)}
-										onKeyDown={(e) => e.key === "Enter" && handleBibleSearch()}
-										placeholder="John 3:16"
-										className="w-full bg-zinc-900/70 backdrop-blur border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all placeholder-zinc-600"
-									/>
-								</div>
+								<select
+									value={bibleVerse}
+									onChange={(e) => setBibleVerse(Number(e.target.value))}
+									disabled={chapterVerses.length === 0}
+									className="flex-1 bg-white border border-stone-200 rounded-xl px-3 py-2 text-sm text-stone-800 focus:outline-none disabled:opacity-50"
+								>
+									{chapterVerses.map((item) => (
+										<option key={item.verse} value={item.verse}>
+											Verse {item.verse}
+										</option>
+									))}
+								</select>
 							</div>
-
-							<button
-								onClick={handleBibleSearch}
-								disabled={isLoadingVerse}
-								className="w-full py-3 bg-zinc-800 hover:bg-white text-zinc-300 hover:text-black rounded-xl flex items-center justify-center transition-all disabled:opacity-50 text-sm font-bold gap-2"
-							>
-								{isLoadingVerse ? (
-									<div className="animate-spin w-4 h-4 border-2 border-zinc-500 border-t-transparent rounded-full" />
-								) : (
-									<>
-										<Search size={16} /> Search
-									</>
-								)}
-							</button>
-
 							{bibleError && (
-								<p className="text-red-400 text-xs mt-2 text-center">
-									{bibleError}
-								</p>
+								<p className="text-red-600 text-xs text-center">{bibleError}</p>
 							)}
 						</div>
 
-						{foundVerse && (
-							<div className="bg-zinc-900/70 backdrop-blur border border-white/10 rounded-2xl p-6 space-y-4 animate-in fade-in slide-in-from-bottom-2">
-								<div>
-									<h3 className="text-indigo-400 font-display text-lg font-bold">
-										{foundVerse.ref}{" "}
-										<span className="text-xs text-zinc-500 ml-2 uppercase">
-											{bibleVersion}
-										</span>
-									</h3>
-									<p className="text-zinc-300 mt-2 leading-relaxed text-sm opacity-80 font-serif italic">
-										"{foundVerse.text}"
-									</p>
-								</div>
+						{isLoadingVerse && (
+							<div className="flex justify-center py-6">
+								<div className="animate-spin w-5 h-5 border-2 border-[#4f7a68] border-t-transparent rounded-full" />
+							</div>
+						)}
+
+						{!isLoadingVerse && selectedPassage && (
+							<div className="bg-white border border-stone-200 rounded-xl p-4 space-y-3">
+								<h3 className="text-stone-800 font-display text-lg font-semibold">
+									{selectedPassage.reference}
+								</h3>
+								<p className="text-stone-600 leading-relaxed text-sm">
+									{selectedPassage.text}
+								</p>
 								<button
 									onClick={addVerseToSlides}
-									className="w-full py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-sm font-bold flex items-center justify-center gap-2 transition-all shadow-lg shadow-indigo-500/20"
+									className="w-full py-2.5 bg-[#4f7a68] hover:bg-[#406557] text-white rounded-xl text-sm font-medium flex items-center justify-center gap-2"
 								>
 									<Plus size={16} />
-									Add to Service
+									Add verse
 								</button>
+								<button
+									onClick={addNextVerse}
+									disabled={!nextPassage}
+									className="w-full py-2.5 bg-white hover:bg-stone-50 text-stone-700 border border-stone-200 rounded-xl text-sm font-medium flex items-center justify-center gap-2 disabled:opacity-40"
+								>
+									<ChevronRight size={16} />
+									Add next verse
+									{nextPassage ? ` (${nextPassage.verse})` : ""}
+								</button>
+							</div>
+						)}
+
+						{!isLoadingVerse && chapterVerses.length > 0 && (
+							<div className="space-y-2">
+								<label className="text-[11px] font-medium text-stone-500">
+									This chapter
+								</label>
+								<div className="space-y-1 max-h-64 overflow-y-auto pr-1">
+									{visibleVerses.length === 0 && (
+										<p className="text-xs text-stone-400 px-3 py-2">No matching verses</p>
+									)}
+									{visibleVerses.map((item) => (
+										<div
+											key={item.verse}
+											className={`flex items-start gap-1 rounded-xl border ${
+												item.verse === bibleVerse
+													? "border-[#4f7a68] bg-[#4f7a68]/5"
+													: "border-transparent hover:bg-stone-50"
+											}`}
+										>
+											<button
+												onClick={() => setBibleVerse(item.verse)}
+												className="flex-1 text-left px-3 py-2 text-xs leading-snug text-stone-700"
+											>
+												<span className="font-semibold mr-2">{item.verse}</span>
+												{item.text}
+											</button>
+											<button
+												onClick={() => {
+													setBibleVerse(item.verse);
+													appendPassage(item);
+												}}
+												className="shrink-0 p-2 text-[#4f7a68] hover:bg-white rounded-xl"
+												title={`Add verse ${item.verse}`}
+											>
+												<Plus size={14} />
+											</button>
+										</div>
+									))}
+								</div>
 							</div>
 						)}
 					</div>
@@ -474,34 +520,33 @@ const Editor: React.FC<EditorProps> = ({
 
 				{/* THEME TAB */}
 				{activeTab === "theme" && (
-					<div className="h-full overflow-y-auto custom-scrollbar animate-in slide-in-from-right-4 duration-300">
-						<div className="p-6 space-y-8">
-							{/* Backgrounds */}
+					<div className="h-full overflow-y-auto">
+						<div className="p-4 space-y-8">
 							<div className="space-y-4">
 								<div className="flex items-center justify-between">
-									<label className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest flex items-center gap-2">
+									<label className="text-[11px] font-medium text-stone-500">
 										Visuals
 									</label>
 									<button
 										onClick={() => onThemeChange({ ...INITIAL_THEME })}
-										className="text-[10px] text-zinc-400 hover:text-white px-2 py-1 rounded-md hover:bg-white/5 transition-colors"
+										className="text-[11px] text-stone-500 hover:text-stone-800 px-2 py-1 rounded-xl hover:bg-stone-100"
 									>
 										Reset
 									</button>
 								</div>
 
-								<div className="grid grid-cols-3 gap-3">
+								<div className="grid grid-cols-3 gap-2">
 									{PRESET_IMAGES.map((url, i) => (
 										<button
 											key={i}
 											onClick={() =>
 												onThemeChange({ type: "image", value: url })
 											}
-											className={`group relative aspect-video rounded-xl overflow-hidden transition-all ${
+											className={`group relative aspect-video overflow-hidden rounded-2xl border ${
 												currentTheme.type === "image" &&
 												currentTheme.value === url
-													? "ring-2 ring-white scale-[1.02]"
-													: "opacity-70 hover:opacity-100"
+													? "border-[#4f7a68]"
+													: "border-stone-200 opacity-80 hover:opacity-100"
 											}`}
 										>
 											<img
@@ -511,10 +556,10 @@ const Editor: React.FC<EditorProps> = ({
 											/>
 											{currentTheme.type === "image" &&
 												currentTheme.value === url && (
-													<div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+													<div className="absolute inset-0 bg-[#3a2f26]/25 flex items-center justify-center">
 														<Check
-															size={20}
-															className="text-white drop-shadow-md"
+															size={18}
+															className="text-white"
 														/>
 													</div>
 												)}
@@ -522,7 +567,7 @@ const Editor: React.FC<EditorProps> = ({
 									))}
 								</div>
 
-								<label className="flex items-center gap-2 w-full justify-center px-4 py-3 bg-zinc-900/70 hover:bg-zinc-800 text-zinc-300 hover:text-white text-xs font-semibold rounded-xl border border-white/10 cursor-pointer transition-all backdrop-blur">
+								<label className="flex items-center gap-2 w-full justify-center px-4 py-2.5 bg-white hover:bg-stone-50 text-stone-700 text-xs font-medium rounded-xl border border-stone-200 cursor-pointer">
 									<Upload size={14} />
 									<span>Upload Custom BG</span>
 									<input
@@ -538,31 +583,32 @@ const Editor: React.FC<EditorProps> = ({
 								</label>
 							</div>
 
-							{/* Gradients */}
-							<div className="space-y-4">
-								<label className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">
+							<div className="space-y-3">
+								<label className="text-[11px] font-medium text-stone-500">
 									Colors
 								</label>
 								<div className="grid grid-cols-3 gap-2">
-									{PRESET_GRADIENTS.map((preset) => (
+									{PRESET_COLORS.map((preset) => (
 										<button
 											key={preset.name}
 											onClick={() =>
-												onThemeChange({ type: "gradient", value: preset.value })
+												onThemeChange({ type: "color", value: preset.value })
 											}
-											className={`h-10 rounded-lg transition-all relative ${
+											className={`h-10 rounded-xl border relative ${
+												currentTheme.type === "color" &&
 												currentTheme.value === preset.value
-													? "ring-2 ring-white scale-105"
-													: "opacity-80 hover:opacity-100"
+													? "border-[#4f7a68]"
+													: "border-stone-200"
 											}`}
 											style={{ background: preset.value }}
 											title={preset.name}
 										>
-											{currentTheme.value === preset.value && (
+											{currentTheme.type === "color" &&
+												currentTheme.value === preset.value && (
 												<div className="absolute inset-0 flex items-center justify-center">
 													<Check
 														size={14}
-														className="text-white drop-shadow-md"
+														className="text-stone-700"
 													/>
 												</div>
 											)}
@@ -571,11 +617,9 @@ const Editor: React.FC<EditorProps> = ({
 								</div>
 							</div>
 
-							{/* Typography Settings */}
-							<div className="space-y-6 pt-6 border-t border-white/5">
-                {/* Font Family */}
+							<div className="space-y-6 pt-6 border-t border-stone-200">
                 <div>
-                  <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-3 block">
+                  <label className="text-[11px] font-medium text-stone-500 mb-3 block">
                     Font Style
                   </label>
                   <div className="grid grid-cols-2 gap-2">
@@ -583,10 +627,10 @@ const Editor: React.FC<EditorProps> = ({
                       <button
                         key={font.name}
                         onClick={() => onThemeChange({ fontFamily: font.value })}
-                        className={`px-3 py-2 rounded-lg text-xs transition-all border ${
+                        className={`px-3 py-2 rounded-xl text-xs border ${
                           currentTheme.fontFamily === font.value
-                            ? "bg-white text-black border-white font-bold"
-                            : "bg-zinc-800 text-zinc-400 border-transparent hover:text-zinc-200 hover:bg-zinc-700"
+                            ? "bg-[#4f7a68] text-white border-[#4f7a68] font-medium"
+                            : "bg-white text-stone-600 border-stone-200 hover:border-stone-400"
                         }`}
                         style={{ fontFamily: font.value }}
                       >
@@ -596,11 +640,10 @@ const Editor: React.FC<EditorProps> = ({
                   </div>
                 </div>
 
-								{/* Overlay Opacity */}
 								<div>
-									<label className="flex justify-between text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-3">
+									<label className="flex justify-between text-[11px] font-medium text-stone-500 mb-3">
 										<span>Dimness</span>
-										<span className="text-white">
+										<span className="text-stone-800">
 											{Math.round((currentTheme.overlayOpacity || 0) * 100)}%
 										</span>
 									</label>
@@ -615,20 +658,19 @@ const Editor: React.FC<EditorProps> = ({
 												overlayOpacity: parseFloat(e.target.value),
 											})
 										}
-										className="w-full accent-white h-1 bg-zinc-800 rounded-lg appearance-none cursor-pointer hover:bg-zinc-700"
+										className="w-full accent-[#4f7a68] h-1 bg-stone-200 rounded-xl appearance-none cursor-pointer"
 									/>
 								</div>
 
-								{/* Font Size */}
 								<div>
-									<label className="flex justify-between text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-3">
+									<label className="flex justify-between text-[11px] font-medium text-stone-500 mb-3">
 										<span>Text Scale</span>
-										<span className="text-white">
+										<span className="text-stone-800">
 											{(currentTheme.fontSize || 1).toFixed(1)}x
 										</span>
 									</label>
 									<div className="flex items-center gap-3">
-										<Type size={12} className="text-zinc-600" />
+										<Type size={12} className="text-stone-400" />
 										<input
 											type="range"
 											min="0.5"
@@ -638,9 +680,9 @@ const Editor: React.FC<EditorProps> = ({
 											onChange={(e) =>
 												onThemeChange({ fontSize: parseFloat(e.target.value) })
 											}
-											className="w-full accent-white h-1 bg-zinc-800 rounded-lg appearance-none cursor-pointer hover:bg-zinc-700"
+											className="w-full accent-[#4f7a68] h-1 bg-stone-200 rounded-xl appearance-none cursor-pointer"
 										/>
-										<Type size={16} className="text-zinc-300" />
+										<Type size={16} className="text-stone-700" />
 									</div>
 								</div>
 							</div>
@@ -650,26 +692,26 @@ const Editor: React.FC<EditorProps> = ({
 
 				{/* OFFERING TAB */}
 				{activeTab === "offering" && (
-					<div className="p-6 space-y-6 overflow-y-auto h-full animate-in slide-in-from-bottom-4 duration-300 custom-scrollbar">
+					<div className="p-4 space-y-6 overflow-y-auto h-full">
 						<div className="space-y-5">
-							<label className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest block border-b border-white/5 pb-2">
-								Giving Screen
+							<label className="text-[11px] font-medium text-stone-500 block border-b border-stone-200 pb-2">
+								Offering
 							</label>
 
 							<div className="space-y-2">
-								<span className="text-[10px] text-zinc-400 uppercase font-bold">
+								<span className="text-[11px] text-stone-500 font-medium">
 									Header
 								</span>
 								<input
 									type="text"
 									value={offeringConfig.title}
 									onChange={(e) => onOfferingChange({ title: e.target.value })}
-									className="w-full bg-zinc-900/70 backdrop-blur border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-colors placeholder-zinc-600"
+									className="w-full bg-white border border-stone-200 rounded-xl px-3 py-2.5 text-sm text-stone-800 focus:outline-none placeholder-stone-400"
 								/>
 							</div>
 
 							<div className="space-y-2">
-								<span className="text-[10px] text-zinc-400 uppercase font-bold">
+								<span className="text-[11px] text-stone-500 font-medium">
 									Subtext
 								</span>
 								<input
@@ -678,45 +720,22 @@ const Editor: React.FC<EditorProps> = ({
 									onChange={(e) =>
 										onOfferingChange({ subTitle: e.target.value })
 									}
-									className="w-full bg-zinc-900/70 backdrop-blur border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-colors placeholder-zinc-600"
+									className="w-full bg-white border border-stone-200 rounded-xl px-3 py-2.5 text-sm text-stone-800 focus:outline-none placeholder-stone-400"
 								/>
 							</div>
 
 							<div className="space-y-2">
-								<span className="text-[10px] text-zinc-400 uppercase font-bold">
+								<span className="text-[11px] text-stone-500 font-medium">
 									QR Code
 								</span>
-
-								{/* File Upload */}
-								<div className="flex items-center gap-2">
-									<label className="flex-1 cursor-pointer bg-zinc-900/70 hover:bg-zinc-800 text-zinc-300 text-xs py-3 px-3 rounded-xl flex items-center justify-center gap-2 transition-colors border border-white/10 backdrop-blur">
-										<Upload size={14} />
-										<span>Upload Image</span>
-										<input
-											type="file"
-											accept="image/*"
-											className="hidden"
-											onChange={(e) =>
-												handleFileUpload(e, (url) =>
-													onOfferingChange({ qrImageUrl: url })
-												)
-											}
-										/>
-									</label>
-									{offeringConfig.qrImageUrl && (
-										<button
-											onClick={() => onOfferingChange({ qrImageUrl: "" })}
-											className="p-3 text-zinc-500 hover:text-red-400 bg-zinc-900/70 border border-white/10 rounded-xl transition-colors backdrop-blur"
-										>
-											<Trash2 size={16} />
-										</button>
-									)}
-								</div>
+								<p className="text-xs text-stone-500">
+									donation.proslavlenie.ru
+								</p>
 							</div>
 						</div>
 
-						<div className="p-6 bg-zinc-900/70 backdrop-blur rounded-2xl flex flex-col items-center gap-4 text-center border border-white/10">
-							<div className="w-24 h-24 bg-white rounded-xl flex items-center justify-center p-2">
+						<div className="p-6 bg-white rounded-xl flex flex-col items-center gap-4 text-center border border-stone-200">
+							<div className="w-40 h-40 bg-white border border-stone-200 rounded-2xl flex items-center justify-center p-2">
 								{offeringConfig.qrImageUrl ? (
 									<img
 										src={offeringConfig.qrImageUrl}
@@ -724,10 +743,10 @@ const Editor: React.FC<EditorProps> = ({
 										className="w-full h-full object-contain"
 									/>
 								) : (
-									<QrCode className="text-zinc-300 opacity-20" size={40} />
+									<QrCode className="text-stone-300" size={40} />
 								)}
 							</div>
-							<p className="text-[10px] text-zinc-500 uppercase tracking-widest font-bold">
+							<p className="text-[11px] text-stone-500 font-medium">
 								Preview
 							</p>
 						</div>

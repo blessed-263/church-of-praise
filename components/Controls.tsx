@@ -1,9 +1,7 @@
 import React from 'react';
-import { 
-  Play, 
-  ChevronLeft, 
-  MonitorOff, 
-  Eraser, 
+import {
+  Play,
+  ChevronLeft,
   Maximize,
   Minimize,
   QrCode,
@@ -40,53 +38,50 @@ const Controls: React.FC<ControlsProps> = ({
   canPrev
 }) => {
   return (
-    <div className="flex items-center gap-2 p-2 bg-zinc-900/80 backdrop-blur-md rounded-full border border-white/10 shadow-[var(--shadow-soft)]">
-      
-      {/* Navigation */}
+    <div className="flex items-center gap-1 p-2 bg-white/90 border border-stone-200 rounded-full shadow-[0_10px_30px_rgba(62,48,38,0.08)]">
       <div className="flex items-center">
         <button
           onClick={onPrev}
           disabled={!canPrev}
-          className={`w-10 h-10 flex items-center justify-center rounded-full transition-all ${
-            !canPrev ? 'text-zinc-700' : 'text-zinc-300 hover:text-white hover:bg-white/10'
+          className={`w-10 h-10 flex items-center justify-center rounded-full ${
+            !canPrev ? 'text-stone-300' : 'text-stone-600 hover:bg-stone-100'
           }`}
           title="Prev"
         >
-          <ChevronLeft size={20} />
+          <ChevronLeft size={18} />
         </button>
 
         <button
           onClick={onNext}
           disabled={!canNext}
-          className={`w-12 h-12 flex items-center justify-center rounded-full mx-1 transition-all shadow-lg ${
-            !canNext 
-            ? 'bg-zinc-800 text-zinc-600' 
-            : 'bg-white text-black hover:scale-105 hover:shadow-white/20 focus:outline-none focus:ring-2 focus:ring-white/50'
+          className={`w-11 h-11 flex items-center justify-center rounded-full mx-0.5 ${
+            !canNext
+            ? 'bg-stone-100 text-stone-400'
+            : 'bg-[#4f7a68] text-white hover:bg-[#406557]'
           }`}
           title="Next"
         >
-          <Play size={20} fill="currentColor" className="ml-1" />
+          <Play size={16} fill="currentColor" className="ml-0.5" />
         </button>
 
         <button
            onClick={onNext}
            disabled={!canNext}
-           className="w-10 h-10 flex items-center justify-center rounded-full text-zinc-300 hover:text-white hover:bg-white/10 transition-all sm:hidden"
+           className="w-10 h-10 flex items-center justify-center rounded-full text-stone-600 hover:bg-stone-100 sm:hidden"
         >
-          <ChevronRight size={20} />
+          <ChevronRight size={18} />
         </button>
       </div>
 
-      <div className="w-px h-6 bg-white/10 mx-2" />
+      <div className="w-px h-5 bg-stone-200 mx-1" />
 
-      {/* Quick Actions */}
       <div className="flex items-center gap-1">
         <button
           onClick={onClear}
-          className={`px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-all ${
-            isClear 
-              ? 'bg-red-500 text-white shadow-[0_0_15px_rgba(239,68,68,0.4)]' 
-              : 'text-zinc-300 hover:text-zinc-100 hover:bg-white/5'
+          className={`px-3.5 py-2 rounded-full text-xs font-medium ${
+            isClear
+              ? 'bg-rose-600 text-white'
+              : 'text-stone-600 hover:bg-stone-100'
           }`}
         >
           Clear
@@ -94,10 +89,10 @@ const Controls: React.FC<ControlsProps> = ({
 
         <button
           onClick={onBlackout}
-          className={`px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-all ${
-            isBlackout 
-              ? 'bg-zinc-700 text-white' 
-              : 'text-zinc-300 hover:text-zinc-100 hover:bg-white/5'
+          className={`px-3.5 py-2 rounded-full text-xs font-medium ${
+            isBlackout
+              ? 'bg-stone-700 text-white'
+              : 'text-stone-600 hover:bg-stone-100'
           }`}
         >
           Blank
@@ -105,29 +100,28 @@ const Controls: React.FC<ControlsProps> = ({
 
         <button
           onClick={onOffering}
-          className={`w-10 h-10 flex items-center justify-center rounded-full transition-all ${
-            isOffering 
-              ? 'bg-indigo-500 text-white shadow-[0_0_15px_rgba(99,102,241,0.4)]' 
-              : 'text-zinc-300 hover:text-zinc-100 hover:bg-white/5'
+          className={`w-10 h-10 flex items-center justify-center rounded-full ${
+            isOffering
+              ? 'bg-[#4f7a68] text-white'
+              : 'text-stone-600 hover:bg-stone-100'
           }`}
           title="Toggle Offering"
         >
-          <QrCode size={18} />
+          <QrCode size={16} />
         </button>
       </div>
 
-      <div className="w-px h-6 bg-white/10 mx-2" />
+      <div className="w-px h-5 bg-stone-200 mx-1" />
 
-      {/* View Controls */}
       <div>
         <button
           onClick={onFullscreen}
-          className={`w-10 h-10 flex items-center justify-center rounded-full transition-all ${
-            isFullscreen ? 'text-white bg-white/10' : 'text-zinc-500 hover:text-white hover:bg-white/5'
+          className={`w-10 h-10 flex items-center justify-center rounded-full ${
+            isFullscreen ? 'bg-stone-100 text-stone-800' : 'text-stone-400 hover:bg-stone-100 hover:text-stone-800'
           }`}
           title="Fullscreen"
         >
-          {isFullscreen ? <Minimize size={18} /> : <Maximize size={18} />}
+          {isFullscreen ? <Minimize size={16} /> : <Maximize size={16} />}
         </button>
       </div>
     </div>
